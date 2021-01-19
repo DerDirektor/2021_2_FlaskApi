@@ -1,8 +1,16 @@
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template, redirect
 import pymongo
 import json
 from bson.objectid import ObjectId
 app = Flask (__name__)
+
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
 
 try:
     mongo = pymongo.MongoClient(
@@ -87,12 +95,12 @@ def update_stair(id):
 @app.route("/user", methods =['GET'])
 def get_some_stair():
     try:
-        data = list(db.user.find({"Bauvorhaben":"Brees"}))
-        print (data)
+        data = list(db.user.find())
+        #print (data)
         for stair in data:
             stair["_id"]=str(stair["_id"])
         return Response(
-            response= json.dumps(data),
+            response= json.dumps(data, indent=4),
             status = 500,
             mimetype="application/json"
         )
@@ -106,6 +114,10 @@ def get_some_stair():
         )
 
 
+#new_data = get_some_stair().json
+#print(new_data)
+#for datum in new_data:
+#    print(datum['Treppennummer'])
 ##########################CREATE###########################################
 @app.route('/user', methods =['POST'])
 def create_user():
@@ -131,5 +143,6 @@ def create_user():
         print('##################')
         print(ex)
 
+    return redirect("http://localhost:4242/")
 if __name__ == '__main__':
-    app.run(port=42, debug=True)
+    app.run(port=4242, debug=True)
